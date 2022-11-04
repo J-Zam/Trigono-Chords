@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  font-family: 'Source Code Pro', monospace;
+  position: relative;
+  font-size: .95rem;
+}
+
+#canvas {
+  background-color: #000;
+  transform: rotateX(180deg);
+  margin-top: 10rem;
+
+  @media (min-width: 768px) {
+    margin-top: 0rem;
+  }
+}
+
+.information {
+  position: absolute;
+  top: 1rem;
+  left: .5rem;
+  z-index: 10;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.44);
+  color: #fff;
+  width: 14.5rem;
+
+  button {
+    padding: .5rem 1rem;
+    border: none;
+    outline: none;
+    background-color: #eea216;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 800;
+    transition: all .5s;
+    width: 100%;
+    height: 35px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ffa500;
+
+    }
+  }
+
+  input {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+}

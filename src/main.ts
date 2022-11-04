@@ -1,37 +1,40 @@
-import "./style.css";
+import "./style.scss";
+import { sleep } from "./utils/spleep";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-const PORCENTAJE_RADIUS = 0.70;
+const btnStart = document.getElementById("btn__start") as HTMLElement;
+const speedSlider = document.getElementById("speed") as HTMLInputElement;
+const sinLabel = document.getElementById("sin") as HTMLElement;
+const cosLabel = document.getElementById("cos") as HTMLElement;
+const radiusLabel = document.getElementById("radius") as HTMLElement;
+const PORCENTAGE_RADIUS = 0.75;
 let maxRadius = 0;
-
-canvas.width = window.innerWidth / 2;
-canvas.height = window.innerHeight / 1.2;
-
-translateOrigin();
-
-// Formating the origin of the canvas to the center.
-function translateOrigin() {
-  maxRadius = (canvas.width / 2) * PORCENTAJE_RADIUS;
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  drawCircumference();
-  begin();
-}
+let speed = 15;
 
 async function begin() {
-  for (let i = 0; i <= 720; i++) {
-    let radians = i * (Math.PI / 180);
-    console.log({angle: i, radians})
+  let i = 0;
+
+  do {
+    let radians = (i * (Math.PI / 180));
     let x = Math.floor(maxRadius * Math.cos(radians));
     let y = Math.floor(maxRadius * Math.sin(radians));
 
-    drawStroke(x, y);
-    drawCosineX(x, y);
-    drawSineY(x, y);
-    drawPoint(x, y);
-    await sleep(20);
+    cosLabel.textContent = `Cos(${i}) = ${x}`;
+    sinLabel.textContent = `Sin(${i}) = ${y}`;
+    radiusLabel.textContent = `Radius(R) = ${maxRadius.toFixed(2)}`;
+    
+    drawStroke(x, y, 1);
+    drawCosX(x, y);
+    drawSinY(x, y);
+    drawCurrentPoint(x, y);
+    await sleep(speed);
     clearScreen();
-  }
+    
+    i++;
+  } while(i <= 7200);
+
 }
+
 function drawCircumference() {
   ctx.beginPath();
   ctx.strokeStyle = "white";
@@ -41,77 +44,105 @@ function drawCircumference() {
   ctx.stroke();
 }
 
-function drawPoint(x: number, y: number) {
+function drawCurrentPoint(x: number, y: number) {
   ctx.beginPath();
-  ctx.fillStyle = "red";
-  ctx.arc(x, y, 5, 0, Math.PI * 2);
+  ctx.fillStyle = "#e13b2c";
+  ctx.arc(x, y, 10, 0, Math.PI * 2);
   ctx.fill();
   ctx.closePath();
 }
 
-function drawStroke(x: number, y: number) {
+function drawStroke(x: number, y: number, lineWidth: number, color = "white") {
   ctx.beginPath();
-  ctx.strokeStyle = "tomato";
-  ctx.lineWidth = 0.9;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
   ctx.moveTo(0, 0);
   ctx.lineTo(x, y);
   ctx.stroke();
 }
 
-function drawCosineX(x: number, y: number) {
+function drawCosX(x: number, y: number) {
   ctx.beginPath();
-  ctx.strokeStyle = "orange";
-  ctx.lineWidth = 1.3;
+  ctx.strokeStyle = "#77dd77";
+  ctx.lineWidth = 1.7;
   ctx.moveTo(x, y);
   ctx.lineTo(x, 0);
   ctx.stroke();
+  
+  drawStroke(x,0, 3, "#77dd77");
+  drawCurrentPoint(x, 0)
 }
 
-function drawSineY(x: number, y: number) {
+function drawSinY(x: number, y: number) {
   ctx.beginPath();
-  ctx.strokeStyle = "lightGreen";
-  ctx.lineWidth = 1.3;
+  ctx.strokeStyle = "#84b6f4";
+  ctx.lineWidth = 1.7;
   ctx.moveTo(x, y);
   ctx.lineTo(0, y);
   ctx.stroke();
+  drawStroke(0,y, 3, "#84b6f4");
+  drawCurrentPoint(0, y)
+
 }
 
 function clearScreen() {
   ctx.fillStyle = "black";
-  ctx.fillRect(
-    -canvas.width,
-    -canvas.height,
-    canvas.width * 2,
-    canvas.height * 2
-  );
-  drawCoordinateLine();
-  drawCircumference()
+  ctx.fillRect( -canvas.width, -canvas.height, canvas.width * 2,canvas.height * 2);
+  drawCoordinateAxis();
+  drawCircumference();
 }
 
-function drawCoordinateLine() {
+function drawCoordinateAxis() {
   ctx.beginPath();
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
-  ctx.moveTo(0, (-maxRadius - 25));
-  ctx.lineTo(0, (maxRadius + 25));
+  ctx.moveTo(0, -maxRadius - 25);
+  ctx.lineTo(0, maxRadius + 25);
   ctx.stroke();
+  ctx.closePath();
 
   ctx.beginPath();
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
-  ctx.moveTo((-maxRadius - 25), 0);
-  ctx.lineTo((maxRadius + 25), 0);
+  ctx.moveTo(-maxRadius - 25, 0);
+  ctx.lineTo(maxRadius + 25, 0);
   ctx.stroke();
+  ctx.closePath();
 }
 
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+function translateOrigin() {
+  maxRadius = Math.floor((canvas.width / 2) * PORCENTAGE_RADIUS);
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  drawCircumference();
 }
 
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth / 2;
   canvas.height = window.innerHeight / 1.2;
+  window.location.reload();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  canvas.width = window.innerWidth / 2;
+  canvas.height = window.innerHeight / 1.2;
   translateOrigin();
+  drawCoordinateAxis();
+  radiusLabel.textContent = `Radius(R) = ${maxRadius.toFixed(2)}`;
+  cosLabel.textContent = `Cos(${0}) = ${Math.floor(maxRadius * Math.cos(0))}`;
+  sinLabel.textContent = `Sin(${0}) = ${Math.floor(maxRadius * Math.sin(0))}`;
+  speedSlider.value = "0";
+});
+
+speedSlider.addEventListener("input", function() {
+  speed = parseFloat(speedSlider.value);
+})
+  
+btnStart.addEventListener("click", async () => {
+  if (!btnStart.textContent!.includes("Start")) {
+      window.location.reload();
+      return;
+  };
+
+  btnStart.innerText = "Restart";
+  begin();
 });
